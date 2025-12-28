@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(tree:*)",
+      "Bash(rm:*)",
+      "Bash(git rm:*)",
+      "Bash(docker compose build:*)"
+    ]
+  }
+}

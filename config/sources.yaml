@@ -1,0 +1,62 @@
+sources:
+  - name: "Qiita Trend"
+    url: "https://qiita.com/api/v2/items"
+    type: "api"
+    method: "qiita_api"
+    query: "stocks:>3"  # Filter for articles with 3+ bookmarks (trending)
+    max_articles: 20
+    enabled: true
+
+  - name: "Zenn Trend"
+    url: "https://zenn.dev/trending"
+    type: "html"
+    method: "playwright"
+    selectors:
+      article_list: "article"
+      article_link: "a[href*='/articles/']"
+      article_title: "h3, h2"
+    max_articles: 15
+    enabled: false  # Disabled: React rendering issues, no RSS for trending
+
+  - name: "Note IT Category"
+    url: "https://note.com/hashtag/it"
+    type: "html"
+    method: "playwright"
+    selectors:
+      article_list: "div[data-note-article]"
+      article_link: "a"
+      article_title: "h3"
+    max_articles: 15
+    enabled: false  # Disabled: Dynamic content rendering issues
+
+  - name: "Hatena Blog Technology"
+    url: "https://b.hatena.ne.jp/hotentry/it"
+    type: "html"
+    method: "requests"  # 静的コンテンツ
+    selectors:
+      article_list: "div.entrylist-contents"
+      article_link: "a.js-keyboard-openable"
+      article_title: "a.js-keyboard-openable"
+    max_articles: 15
+    enabled: true
+
+  - name: "DevelopersIO"
+    url: "https://dev.classmethod.jp/feed/"
+    type: "rss"
+    method: "feedparser"
+    max_articles: 15
+    enabled: true
+
+  - name: "Publickey"
+    url: "https://www.publickey1.jp/atom.xml"
+    type: "rss"
+    method: "feedparser"
+    max_articles: 15
+    enabled: true
+
+  - name: "ICS Media"
+    url: "https://ics.media/feed"
+    type: "rss"
+    method: "feedparser"
+    max_articles: 15
+    enabled: true

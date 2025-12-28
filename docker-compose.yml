@@ -1,0 +1,49 @@
+services:
+  crawler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trend-it-post-crawler
+    env_file:
+      - .env
+    volumes:
+      # Mount output directory to persist reports
+      - ./output:/app/output
+      # Mount logs directory to persist logs
+      - ./logs:/app/logs
+      # Mount config for easy updates
+      - ./config:/app/config:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+
+  # Optional: Add a scheduler service for daily execution
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: trend-it-post-crawler-scheduler
+    env_file:
+      - .env
+    volumes:
+      - ./output:/app/output
+      - ./logs:/app/logs
+      - ./config:/app/config:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    # Run daily at 9:00 AM JST (midnight UTC)
+    command: >
+      sh -c "
+      while true; do
+        CURRENT_HOUR=$$(date +%H);
+        if [ $$CURRENT_HOUR -eq 0 ]; then
+          python main.py;
+          sleep 3600;
+        else
+          sleep 600;
+        fi;
+      done
+      "
+    restart: unless-stopped
+    profiles:
+      - scheduler
