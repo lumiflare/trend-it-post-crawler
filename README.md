@@ -270,7 +270,7 @@ sources:
 `output/` ディレクトリに以下の形式で保存されます:
 
 ```
-output/daily_report_20241229_090000.md
+output/daily_report_20251229_090000.md
 ```
 
 レポートには以下が含まれます:
@@ -285,11 +285,7 @@ Notion MCP（インテグレーション）を設定している場合、毎日�
 
 **Notionページの構成:**
 - **親ページ**: IT Trend（手動で作成）
-  - **子ページ**: 2025年12月29日 - IT Trends（自動作成）
-    - 📊 Daily Summary
-    - S Rank Articles
-    - A Rank Articles
-    - B Rank Articles
+  - **子ページ**: Y年m月d日（自動作成）
 
 **ページの特徴:**
 - 見出し、引用、リンクを含む美しい構成
