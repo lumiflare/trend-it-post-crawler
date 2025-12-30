@@ -109,7 +109,8 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here
 # 注意: 正しいモデル名を使用してください。存在しないモデル名を指定するとエラーになります
 MODEL_NAME=claude-sonnet-4-5-20250929
 
-# オプション: Notion Integration（Notion統合を使う場合）
+# 注意: 環境変数名は NOTION_API_KEY（pydantic settings用）
+# 内部的に notion-mcp-server には NOTION_TOKEN として渡されます
 NOTION_API_KEY=your_notion_integration_token_here
 NOTION_PARENT_PAGE_ID=your_notion_parent_page_id_here
 ```
@@ -144,7 +145,20 @@ NOTION_PARENT_PAGE_ID=your_notion_parent_page_id_here
 
 5. **接続テスト**
    ```bash
+   # Docker環境（推奨）
+   docker compose run --rm crawler python test_notion_connection.py
+
+   # ローカル環境
    python test_notion_connection.py
+   ```
+
+6. **ページ作成テスト**
+   ```bash
+   # Docker環境（推奨）
+   docker compose run --rm crawler python test_notion_publish.py
+
+   # ローカル環境
+   python test_notion_publish.py
    ```
 
 これで、毎日新しい子ページが自動作成されます！
@@ -159,13 +173,13 @@ NOTION_PARENT_PAGE_ID=your_notion_parent_page_id_here
 #### ビルド
 
 ```bash
-docker-compose build
+docker compose build
 ```
 
 #### 実行（1回のみ）
 
 ```bash
-docker-compose run --rm crawler
+docker compose run --rm crawler
 ```
 
 #### 定期実行（毎日実行）
@@ -173,10 +187,18 @@ docker-compose run --rm crawler
 スケジューラーサービスを使用:
 
 ```bash
-docker-compose --profile scheduler up -d
+docker compose --profile scheduler up -d
 ```
 
 これで毎日0時（UTC）にクローラーが自動実行されます。
+
+#### Dockerビルドでエラーが出る場合
+
+ディスク容量不足の場合:
+```bash
+# ビルドキャッシュをクリア
+docker builder prune -af
+```
 
 ### 3. ローカル環境での実行
 
@@ -270,11 +292,23 @@ Notion MCP（インテグレーション）を設定している場合、毎日�
     - B Rank Articles
 
 **ページの特徴:**
-- 見出し、コールアウト、リンクを含む美しい構成
+- 見出し、引用、リンクを含む美しい構成
 - 記事タイトルはクリック可能なリンク
-- 技術タグの自動抽出
+- 技術タグの自動抽出（インラインコードで表示）
 - 重要度別のグループ化
 - 毎日自動で新しいページが追加される
+
+**対応しているマークダウン記法:**
+- `# 見出し1`, `## 見出し2`, `### 見出し3`
+- `- リスト` (箇条書き)
+- `1. 番号付きリスト`
+- `> 引用`
+- `---` (区切り線)
+- `**太字**`, `*斜体*`
+- `` `インラインコード` ``
+- `[リンクテキスト](URL)`
+- `- [ ] ToDo`, `- [x] 完了`
+- コードブロック（```言語名）
 
 ## カスタマイズ
 
@@ -307,16 +341,6 @@ MAX_RETRY_ATTEMPTS=3             # リトライ回数
 playwright install --force chromium
 ```
 
-### Docker でのメモリ不足
-
-`docker-compose.yml` にメモリ制限を追加:
-
-```yaml
-services:
-  crawler:
-    mem_limit: 2g
-```
-
 ### API Rate Limit
 
 Claude APIのレート制限に達した場合、`.env` で以下を調整:
@@ -335,7 +359,7 @@ MIT License
 
 ```bash
 # Docker環境
-docker-compose logs -f crawler
+docker compose logs -f crawler
 
 # ローカル環境
 tail -f logs/app.log
@@ -352,7 +376,21 @@ python main.py --log-level DEBUG
 **Notion接続テスト:**
 
 ```bash
+# Docker環境（推奨）
+docker compose run --rm crawler python test_notion_connection.py
+
+# ローカル環境
 python test_notion_connection.py
+```
+
+**Notionページ作成テスト:**
+
+```bash
+# Docker環境（推奨）
+docker compose run --rm crawler python test_notion_publish.py
+
+# ローカル環境
+python test_notion_publish.py
 ```
 
 **個別エージェントのテスト:**
@@ -364,8 +402,3 @@ scraper = ScraperAgent()
 articles = await scraper.run()
 print(f"Collected {len(articles)} articles")
 ```
-
-## 貢献
-
-バグ報告や機能リクエストは Issue でお願いします。
-プルリクエストも歓迎します！
